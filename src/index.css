@@ -1,13 +1,22 @@
 @import "tailwindcss";
 
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Basic styles for the body */
+/* Use standard Tailwind classes instead of custom ones */
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-800; /* Changed from bg-background-light text-text-primary */
+    /* Keep transitions if you like, but they don't do anything without theme switching */
+    /* transition-colors duration-300 ease-in-out; */
+  }
+  /* REMOVE body.dark styles - This comment suggests dark styles existed, but they aren't shown and need a config anyway */
 }
 
+/* Optional: Style links using standard Tailwind classes */
+@layer components {
+  a {
+    /* Use standard Tailwind blue colors for links */
+    @apply text-blue-600 hover:text-blue-700 hover:underline transition-colors; /* Changed from custom accent colors */
+  }
+}
+
+/* Add any other global base styles here */
