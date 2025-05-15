@@ -1,5 +1,3 @@
-// src/contexts/AuthContext.jsx
-
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types'; // Make sure prop-types is installed
 import { getLoggedInUser, setLoggedInUser, removeLoggedInUser, findUser, addUser, findUserByEmail } from '../utils/authStorage';
@@ -27,6 +25,9 @@ export const AuthProvider = ({ children }) => {
         username: foundUser.username,
         email: foundUser.email,
         isAdmin: foundUser.isAdmin || false,
+        address: foundUser.address,
+        description: foundUser.description,
+        photoURL: foundUser.photoURL,
       });
       return { success: true, user: foundUser };
     } else {
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signup = (username, email, password, confirmPassword, isAdmin = false) => {
+  const signup = (username, email, password, confirmPassword, address, description, photoURL, isAdmin = false) => {
       // Basic validation
       if (!username || !email || !password || !confirmPassword) {
           return { success: false, message: 'All fields are required.' };
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }) => {
           return { success: false, message: 'Email address is already registered.' };
       }
 
-      const newUser = { username, email, password, isAdmin }; // In real app, hash password here
+      const newUser = { username, email, password, isAdmin, address, description, photoURL }; // In real app, hash password here
       const added = addUser(newUser);
 
       if (added) {
@@ -59,6 +60,9 @@ export const AuthProvider = ({ children }) => {
             username: newUser.username,
             email: newUser.email,
             isAdmin: newUser.isAdmin || false,
+            address: newUser.address,
+            description: newUser.description,
+            photoURL: newUser.photoURL,
           });
           return { success: true, user: newUser };
       } else {
