@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Link } from 'react-router-dom'; // For Home Icon
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import ProfileCard from '../components/ProfileCard';
 import SingleAddressMap from '../components/SingleAddressMap';
@@ -24,10 +24,23 @@ const ProfileListPage = () => {
 
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [mobileView, setMobileView] = useState('list');
+    const [mobileView, setMobileView] = useState('list'); // Default to list view
     const [selectedProfileAddressForMap, setSelectedProfileAddressForMap] = useState(null);
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-    const filterContainerRef = useRef(null); // CORRECTED: Was filterUID περιοχήRef
+    const filterContainerRef = useRef(null);
+
+    // Initialize mobileView based on window width on mount
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 768) { // md breakpoint
+                setMobileView('list'); // On larger screens, default to showing list alongside map
+            }
+        };
+        handleResize(); // Set initial state
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
 
     useEffect(() => {
         const fetchProfiles = async () => {
@@ -57,10 +70,8 @@ const ProfileListPage = () => {
         fetchProfiles();
     }, []);
 
-    // Close filter modal if clicked outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            // CORRECTED: Use filterContainerRef
             if (filterContainerRef.current && !filterContainerRef.current.contains(event.target)) {
                 setIsFilterModalOpen(false);
             }
@@ -119,7 +130,9 @@ const ProfileListPage = () => {
     const handleProfileSelectForMap = (profile) => {
          if (profile.address && profile.address !== 'Location Undisclosed') {
             setSelectedProfileAddressForMap(profile.address);
-            if (window.innerWidth < 768) setMobileView('map');
+            if (window.innerWidth < 768) { // md breakpoint
+                 setMobileView('map');
+            }
         } else {
             setSelectedProfileAddressForMap(null); 
         }
@@ -127,15 +140,12 @@ const ProfileListPage = () => {
 
     const handleApplyModalFilters = (newFiltersFromModal) => {
         setActiveFilters(newFiltersFromModal);
-        // Modal closes itself via its onClose prop passed to it
     };
 
     const handleClearAllPageFilters = () => {
         setSearchQuery('');
         setActiveFilters(initialFiltersState);
         setSelectedProfileAddressForMap(null);
-        // If filter modal is open, its temp state will reset on next open due to useEffect dependency on currentFilters.
-        // Or, we could close it: setIsFilterModalOpen(false);
     };
     
     const countAppliedFilters = () => {
@@ -148,6 +158,27 @@ const ProfileListPage = () => {
     const appliedFilterCount = countAppliedFilters();
 
     const toggleSortOrder = () => setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
+
+    // Mobile view toggle buttons component for reusability
+    const MobileViewToggleButtons = ({ className = "" }) => (
+        <div className={`md:hidden flex space-x-2 justify-center ${className}`}>
+            <button 
+                onClick={() => setMobileView('list')} 
+                className={`p-2.5 rounded-lg shadow-md transition-all ${mobileView === 'list' ? 'bg-sky-500 text-white scale-110' : 'bg-white text-slate-700 hover:bg-slate-100'}`} 
+                title="Show List"
+            >
+                <FaListUl />
+            </button>
+            <button 
+                onClick={() => setMobileView('map')} 
+                className={`p-2.5 rounded-lg shadow-md transition-all ${mobileView === 'map' ? 'bg-sky-500 text-white scale-110' : 'bg-white text-slate-700 hover:bg-slate-100'}`} 
+                title="Show Map"
+            >
+                <FaMapMarkedAlt />
+            </button>
+        </div>
+    );
+
 
     if (isLoading && !allProfiles.length) { 
         return (
@@ -173,11 +204,13 @@ const ProfileListPage = () => {
             <div className="flex flex-col md:flex-row h-screen overflow-hidden">
                 {/* Left Pane: Filters and Profile List */}
                 <div className={`
-                    ${mobileView === 'map' && 'hidden md:flex'}
-                    md:w-2/5 lg:w-1/3 xl:w-1/4 flex flex-col h-full 
+                    ${mobileView === 'map' && window.innerWidth < 768 ? 'hidden' : 'flex'} 
+                    md:flex md:w-2/5 lg:w-1/3 xl:w-1/4 flex-col h-full 
                     bg-gradient-to-br from-sky-50 via-teal-50 to-cyan-50
                     border-r border-slate-200 shadow-lg z-10 
                 `}>
+                {/* Conditional rendering of left pane based on mobileView AND screen size */}
+
                     <div className="p-4 sticky top-0 bg-gradient-to-br from-sky-50/90 via-teal-50/80 to-cyan-50/90 backdrop-filter backdrop-blur-md z-20 border-b border-slate-200/50">
                         <Fade direction="down" triggerOnce duration={300}>
                             <div className="flex items-center justify-between mb-4">
@@ -196,8 +229,6 @@ const ProfileListPage = () => {
                                     value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
                                 />
                             </div>
-                            {/* Filter button and modal container */}
-                            {/* CORRECTED: Use filterContainerRef */}
                             <div className="relative" ref={filterContainerRef}> 
                                 <div className="flex items-center justify-between space-x-2">
                                     <button
@@ -220,7 +251,6 @@ const ProfileListPage = () => {
                                         {sortOrder === 'asc' ? <FaSortAmountUp className="h-4 w-4" /> : <FaSortAmountDown className="h-4 w-4" />}
                                     </button>
                                 </div>
-                                {/* Conditionally render the popover modal here */}
                                 <FilterModal
                                     isOpen={isFilterModalOpen}
                                     onClose={() => setIsFilterModalOpen(false)}
@@ -238,10 +268,8 @@ const ProfileListPage = () => {
                                     <FaBroom className="mr-1.5" /> Clear All
                                 </button>
                             )}
-                            <div className="md:hidden flex space-x-2 mt-3 justify-center">
-                                <button onClick={() => setMobileView('list')} className={`p-2 rounded-md ${mobileView === 'list' ? 'bg-sky-500 text-white' : 'bg-slate-200 text-slate-700'}`} title="Show List"><FaListUl /></button>
-                                <button onClick={() => setMobileView('map')} className={`p-2 rounded-md ${mobileView === 'map' ? 'bg-sky-500 text-white' : 'bg-slate-200 text-slate-700'}`} title="Show Map"><FaMapMarkedAlt /></button>
-                            </div>
+                            {/* Mobile View Toggle Buttons - shown in the header for list view */}
+                            <MobileViewToggleButtons className="mt-3" />
                         </Fade>
                     </div>
 
@@ -275,20 +303,26 @@ const ProfileListPage = () => {
                     </div>
                 </div>
 
+                {/* Right Pane: Map Area */}
                 <div className={`
-                    ${mobileView === 'list' && 'hidden md:flex'}
-                    md:w-3/5 lg:w-2/3 xl:w-3/4 h-full 
-                    p-2 md:p-3 lg:p-4 
+                    ${mobileView === 'list' && window.innerWidth < 768 ? 'hidden' : 'flex'} 
+                    md:flex md:w-3/5 lg:w-2/3 xl:w-3/4 h-full 
+                    p-0 md:p-3 lg:p-4 {/* Remove padding for mobile full screen map */}
                     bg-slate-100 
-                    flex items-center justify-center 
-                    relative
+                    items-center justify-center 
+                    relative {/* Important for positioning overlay buttons */}
                 `}>
-                    <div className="w-full h-full bg-white rounded-xl shadow-xl overflow-hidden">
+                {/* Conditional rendering of right pane based on mobileView AND screen size */}
+                    <div className="w-full h-full bg-white md:rounded-xl shadow-xl overflow-hidden"> {/* Remove rounded for mobile full screen */}
                       <SingleAddressMap address={selectedProfileAddressForMap} />
                     </div>
+                    
+                    {/* Overlay Mobile View Toggle Buttons - shown over the map in map view */}
+                    {window.innerWidth < 768 && (
+                        <MobileViewToggleButtons className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20" />
+                    )}
                 </div>
             </div>
-            {/* FilterModal is now rendered inline above, not here as a full-screen modal */}
         </>
     );
 };
