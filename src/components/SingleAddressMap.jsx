@@ -1,86 +1,139 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import markerIcon from 'leaflet/dist/images/marker-icon.png';
-import markerRetinaIcon from 'leaflet/dist/images/marker-icon-2x.png';
-import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import { FaMapMarkerAlt, FaSpinner, FaExclamationTriangle } from 'react-icons/fa'; // Icons for states
 
+// Leaflet Icon Setup (using unpkg for reliability)
 delete L.Icon.Default.prototype._getIconUrl;
-
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: markerRetinaIcon,
-  iconUrl: markerIcon,
-  shadowUrl: markerShadow,
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
-const MapComponent = ({ address }) => {
-  const [position, setPosition] = React.useState(null);
-
-  React.useEffect(() => {
-    if (address) {
-      geocodeAddress(address)
-        .then((coords) => {
-          setPosition(coords);
-        })
-        .catch((error) => {
-          console.error("Geocoding error:", error);
-        });
+// --- Geocoding Logic ---
+const geocodeAddress = async (addr) => {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addr)}&format=jsonv2&addressdetails=1&limit=1`
+    );
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Nominatim API request failed: ${response.status} ${response.statusText}. Body: ${errorBody}`);
     }
-  }, [address]);
-
-  const geocodeAddress = async (address) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${address}&format=jsonv2`
-      );
-      const data = await response.json();
-
-      if (data && data.length > 0) {
-        return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-      } else {
-        throw new Error("Address not found");
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
-      throw error; // Re-throw the error to be caught by the caller
+    const data = await response.json();
+    if (data && data.length > 0) {
+      return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+    } else {
+      throw new Error("Address not found by geocoding service.");
     }
-  };
-
-  const MapWithReset = ({ position }) => {
-    const map = useMap();
-    React.useEffect(() => {
-      if (position) {
-        map.setView(position, 13); // Adjust zoom level as needed
-      }
-    }, [position, map]);
-    return null;
-  };
-
-  return (
-    <div style={{ height: '400px', width: '100%' }}>
-      {position ? (
-        <MapContainer
-          center={position}
-          zoom={13}
-          style={{ height: '400px', width: '100%' }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          <MapWithReset position={position} />
-          <Marker position={position}>
-            <Popup>
-              {address}
-            </Popup>
-          </Marker>
-        </MapContainer>
-      ) : (
-        <p>Loading map...</p>
-      )}
-    </div>
-  );
+  } catch (error) {
+    console.error("Geocoding process error in SingleAddressMap:", error.message);
+    throw error; 
+  }
 };
 
-export default MapComponent;
+// --- Map State Components ---
+const MapPlaceholder = () => (
+  <div className="flex flex-col items-center justify-center h-full text-slate-500">
+    <FaMapMarkerAlt className="w-16 h-16 text-slate-300 mb-4" />
+    <p className="text-lg">Select a profile's "View on Map"</p>
+    <p className="text-sm">to display its location here.</p>
+  </div>
+);
+
+const MapLoading = ({ address }) => (
+  <div className="flex flex-col items-center justify-center h-full text-sky-600">
+    <FaSpinner className="animate-spin w-12 h-12 mb-4" />
+    <p className="text-lg">Locating address:</p>
+    <p className="text-md font-medium truncate max-w-xs px-2" title={address}>{address}</p>
+  </div>
+);
+
+const MapError = ({ errorMsg }) => (
+  <div className="flex flex-col items-center justify-center h-full text-red-600 p-4 text-center">
+    <FaExclamationTriangle className="w-12 h-12 text-red-400 mb-4" />
+    <p className="text-lg font-semibold">Map Error</p>
+    <p className="text-sm">{errorMsg || "Could not load location."}</p>
+  </div>
+);
+
+// --- Leaflet Specific Components ---
+const MapViewUpdater = ({ center, zoom }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (center) {
+      map.flyTo(center, zoom, { animate: true, duration: 1.0 });
+    }
+  }, [center, zoom, map]);
+  return null;
+};
+
+const ActualMap = ({ position, address }) => (
+  <MapContainer
+    center={position}
+    zoom={14}
+    style={{ height: '100%', width: '100%', borderRadius: 'inherit' }}
+    scrollWheelZoom={true}
+    key={position.join('-')} 
+  >
+    <TileLayer
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    />
+    <MapViewUpdater center={position} zoom={14} />
+    <Marker position={position}>
+      <Popup minWidth={90}>{address}</Popup>
+    </Marker>
+  </MapContainer>
+);
+
+
+// --- Main SingleAddressMap Component ---
+const SingleAddressMap = ({ address }) => {
+  const [position, setPosition] = useState(null);
+  const [status, setStatus] = useState('idle');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const attemptGeocode = useCallback(async (addrToGeocode) => {
+    if (!addrToGeocode || addrToGeocode === 'Location Undisclosed') { // Also check for placeholder
+      setStatus('idle');
+      setPosition(null);
+      return;
+    }
+    setStatus('loading');
+    setPosition(null);
+    setErrorMsg('');
+    try {
+      const coords = await geocodeAddress(addrToGeocode);
+      setPosition(coords);
+      setStatus('success');
+    } catch (error) {
+      setErrorMsg(error.message || "Failed to find address on map.");
+      setPosition(null);
+      setStatus('error');
+    }
+  }, []);
+
+  useEffect(() => {
+    attemptGeocode(address);
+  }, [address, attemptGeocode]);
+
+  if (status === 'idle') {
+    return <MapPlaceholder />;
+  }
+  if (status === 'loading') {
+    return <MapLoading address={address} />;
+  }
+  if (status === 'error') {
+    return <MapError errorMsg={errorMsg} />;
+  }
+  if (status === 'success' && position) {
+    return <ActualMap position={position} address={address} />;
+  }
+
+  return <MapPlaceholder />; // Default fallback
+};
+
+export default SingleAddressMap;
