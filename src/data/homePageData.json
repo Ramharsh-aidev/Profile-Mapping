@@ -1,0 +1,93 @@
+{
+  "heroSection": {
+    "title": "Explore Profiles and Locations Visually",
+    "subtitle": "Navigate through a list of profiles and interactively explore their addresses on a map for intuitive geographic visualization.",
+    "primaryButtonText": "View Profiles",
+    "primaryButtonLink": "/profiles",
+    "secondaryButtonText": "Learn More",
+    "secondaryButtonAnchor": "#how-it-works-section",
+    "backgroundImage": "/path-to-your-background-image.jpg"
+  },
+  "howItWorksSection": {
+    "title": "How Profile Explorer Works",
+    "steps": [
+      {
+        "icon": "FaListAlt",
+        "title": "Browse Profiles",
+        "description": "Easily navigate through a list of available profiles."
+      },
+      {
+        "icon": "FaUser",
+        "title": "View Details",
+        "description": "Click on a profile to see detailed information."
+      },
+      {
+        "icon": "FaMapMarkedAlt",
+        "title": "Explore on Map",
+        "description": "See the profile's address visualized interactively on a map."
+      }
+    ]
+  },
+  "aboutSection": {
+    "title": "About ProfileMapper",
+    "description": "ProfileMapper is a web application designed to help you connect with individuals by visualizing their geographic locations. Browse through a list of user profiles and explore their addresses directly on an interactive map powered by OpenStreetMap. Our goal is to provide a simple yet powerful way to understand the spatial distribution of our community."
+  },
+  "featuresSection": {
+    "title": "Key Features",
+    "features": [
+      {
+        "icon": "FaMapPin",
+        "title": "Interactive Map Display",
+        "description": "Visualize profile addresses directly on a dynamic map."
+      },
+      {
+        "icon": "FaList",
+        "title": "Profile List Navigation",
+        "description": "Easily browse and select profiles from a clear list view."
+      },
+      {
+        "icon": "FaSearch",
+        "title": "Search & Filtering",
+        "description": "Quickly find profiles using basic search and filtering options."
+      },
+      {
+        "icon": "FaFilter",
+        "title": "Advanced Filtering",
+        "description": "Refine your search with advanced filters like tags, categories, or proximity."
+      },
+      {
+        "icon": "FaMobileAlt",
+        "title": "Responsive Design",
+        "description": "Access and explore profiles seamlessly on any device."
+      },
+      {
+        "icon": "FaLock",
+        "title": "Data Security",
+        "description": "Your profile data is handled with privacy and security in mind."
+      }
+    ]
+  },
+   "feedbackSection": {
+    "title": "What Our Users Say",
+    "testimonials": [
+      {
+        "image": "placeholder",
+        "name": "Rohan Sharma",
+        "title": "Digital Marketing Specialist",
+        "quote": "ProfileMapper's geographic visualization is a game-changer for our campaign planning. It helps us understand our audience distribution across India perfectly."
+      },
+      {
+        "image": "placeholder",
+        "name": "Vikram Singh",
+        "title": "Supply Chain Manager",
+        "quote": "We use ProfileMapper to get a quick overview of our vendor locations. It's simple, effective, and saves us a lot of time in logistical planning."
+      },
+      {
+        "image": "placeholder",
+        "name": "Anushka Choudhary",
+        "title": "Community Organizer",
+        "quote": "This tool has been invaluable for mapping our volunteer network and outreach areas. ProfileMapper makes it easy to connect with people on the ground."
+      }
+    ]
+  }
+}

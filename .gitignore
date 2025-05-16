@@ -25,6 +25,4 @@ dist-ssr
 *.sw?
 
 # Utils
-utils/
-data/
 backend/
