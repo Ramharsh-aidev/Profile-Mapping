@@ -12,6 +12,7 @@ import UserForm from '../components/admin/UserForm';
 import UserList from '../components/admin/UserList';
 import { FaPlus, FaSpinner, FaExclamationCircle, FaUserShield, FaSave } from 'react-icons/fa';
 import { toast, Toaster } from 'react-hot-toast';
+import Header from '../components/layouts/Header';
 
 const AdminDashboard = () => {
     const { user: adminUser } = useAuth();
@@ -183,6 +184,7 @@ const AdminDashboard = () => {
 
     return (
         <>
+            <Header />
             <Toaster position="top-center" />
             <div className="min-h-[calc(100vh-8rem)] bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-5xl mx-auto">

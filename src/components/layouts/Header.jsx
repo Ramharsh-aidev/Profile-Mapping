@@ -1,261 +1,150 @@
 // src/components/layouts/Header.jsx
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Button from '../ui/Button'; // Adjust path if necessary
-import { useAuth } from '../../contexts/AuthContext'; // Using your custom hook
-import { FaBell, FaUserCircle, FaSignOutAlt, FaEdit, FaIdBadge, FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa'; // Added icons
+import { Link, useNavigate } from 'react-router-dom'; // useNavigate is needed for mobile logout
+import Button from '../ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
+import UserDropdown from '../ui/UserDropdown';
+import { FaBell, FaBars, FaTimes, FaIdBadge, FaEdit, FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
+
+// Logo Component
+const Logo = () => (
+  <Link to="/" className="flex items-center group">
+    <svg
+      className="h-8 w-auto text-sky-700 group-hover:text-sky-800 transition-colors duration-300"
+      viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"
+    >
+      <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20ZM12 6C9.24 6 7 8.24 7 11C7 12.76 7.67 14.32 8.75 15.39C8.3 15.99 7.56 16.78 7.5 17C7.44 17.22 7.53 17.45 7.71 17.59C7.89 17.73 8.14 17.75 8.33 17.63C9.65 16.83 10.93 16.09 12 15.47C13.07 16.09 14.35 16.83 15.67 17.63C15.86 17.75 16.11 17.73 16.29 17.59C16.47 17.45 16.56 17.22 16.5 17C16.44 16.78 15.7 15.99 15.25 15.39C16.33 14.32 17 12.76 17 11C17 8.24 14.76 6 12 6ZM12 13C10.9 13 10 12.1 10 11C10 9.9 10.9 9 12 9C13.1 9 14 9.9 14 11C14 12.1 13.1 13 12 13Z" />
+    </svg>
+  </Link>
+);
 
 const Header = () => {
   const { user, logout, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    if (typeof window !== 'undefined') { // Check if window is defined (for SSR/build)
-      const savedTheme = localStorage.getItem('theme');
-      return savedTheme === 'dark';
-    }
-    return false; // Default to light theme if window is not available
-  });
-
-  const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
+  const navigate = useNavigate();
 
-
-  // Dark mode effect
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      if (isDarkMode) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
-    }
-  }, [isDarkMode]);
-
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
-  const toggleDropdown = () => setIsDropdownOpen(prev => !prev);
   const toggleMobileMenu = () => setIsMobileMenuOpen(prev => !prev);
 
-  const handleLogout = async () => {
+  const handleMobileLogout = async () => {
     try {
-      await logout();
-      setIsDropdownOpen(false); // Close dropdown on logout
-      setIsMobileMenuOpen(false); // Close mobile menu if open
-      navigate('/');
+      await logout(); // Call logout from AuthContext
+      setIsMobileMenuOpen(false); // Close mobile menu
+      navigate('/'); // Redirect to home
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
 
-  // Close dropdown/mobile menu if clicked outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-      }
+    const handleClickOutsideMobile = (event) => {
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target) && !event.target.closest('button[aria-label="Toggle mobile menu"]')) {
-        // Check if click is outside and not on the toggle button itself
         setIsMobileMenuOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutsideMobile);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideMobile);
+    };
   }, []);
 
-
-  const UserMenuButton = () => (
-    <button
-      onClick={toggleDropdown}
-      className="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 dark:focus:ring-offset-slate-800"
-      aria-expanded={isDropdownOpen}
-      aria-haspopup="true"
-    >
-      <span className="sr-only">Open user menu</span>
-      <img
-        className="h-8 w-8 rounded-full object-cover"
-        src={user?.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || user?.username || 'U')}&background=random&color=fff&size=32`}
-        alt="User avatar"
-      />
-      <span className="hidden md:block ml-2 text-gray-700 dark:text-slate-200 font-medium text-sm">
-        {user?.name || user?.username}
-      </span>
-    </button>
-  );
-
-  const DropdownMenu = () => (
-    <div
-      className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-xl bg-white dark:bg-slate-700 ring-1 ring-black dark:ring-slate-600 ring-opacity-5 focus:outline-none py-1 z-50" // Added z-50
-      role="menu"
-      aria-orientation="vertical"
-    >
-      <Link
-        to={`/profiles/${encodeURIComponent(user?.username || '')}`}
-        onClick={() => {setIsDropdownOpen(false); setIsMobileMenuOpen(false);}}
-        className="flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 w-full text-left"
-        role="menuitem"
-      >
-        <FaIdBadge className="mr-3 h-5 w-5 text-slate-500 dark:text-slate-400" />
-        My Public Profile
+  const AuthButtons = ({isMobile = false}) => (
+    <div className={`flex items-center ${isMobile ? 'flex-col space-y-3 w-full' : 'space-x-3'}`}>
+      <Link to="/login" className="no-underline w-full md:w-auto" onClick={() => isMobile && setIsMobileMenuOpen(false)}>
+        <Button variant="outline" className={`px-4 py-1.5 text-sm border-slate-400 text-slate-700 hover:border-sky-600 hover:text-sky-700 ${isMobile && 'w-full py-2.5'}`}>Sign In</Button>
       </Link>
-      <Link
-        to="/dashboard/edit-profile"
-        onClick={() => {setIsDropdownOpen(false); setIsMobileMenuOpen(false);}}
-        className="flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 w-full text-left"
-        role="menuitem"
-      >
-        <FaEdit className="mr-3 h-5 w-5 text-slate-500 dark:text-slate-400" />
-        Edit Profile
+      <Link to="/signup" className="no-underline w-full md:w-auto" onClick={() => isMobile && setIsMobileMenuOpen(false)}>
+        <Button variant="primary" className={`px-4 py-1.5 text-sm bg-sky-600 hover:bg-sky-700 ${isMobile && 'w-full py-2.5'}`}>Sign Up</Button>
       </Link>
-      {user?.isAdmin && (
-         <Link
-          to="/admin"
-          onClick={() => {setIsDropdownOpen(false); setIsMobileMenuOpen(false);}}
-          className="flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 w-full text-left"
-          role="menuitem"
-        >
-          <FaUserCircle className="mr-3 h-5 w-5 text-slate-500 dark:text-slate-400" />
-          Admin Dashboard
-        </Link>
-      )}
-      <button
-        onClick={handleLogout}
-        className="flex items-center px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-600 w-full text-left"
-        role="menuitem"
-      >
-        <FaSignOutAlt className="mr-3 h-5 w-5" />
-        Sign out
-      </button>
     </div>
   );
 
-  const AuthButtons = () => (
-    <>
-      <Link to="/login">
-        <Button variant="outline" className="hidden sm:block px-4 py-2 text-sm">Sign In</Button>
-      </Link>
-      <Link to="/signup">
-        <Button variant="primary" className="px-4 py-2 text-sm">Sign Up</Button>
-      </Link>
-    </>
-  );
-
   return (
-    <header className="bg-white dark:bg-slate-800 shadow-sm sticky top-0 z-50"> {/* Increased z-index */}
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo/Site Name */}
-        <div className="flex items-center">
-          <Link to="/" className="text-xl font-bold text-gray-800 dark:text-slate-100">Profile Explorer</Link>
-        </div>
+    <header className="bg-sky-100/70 backdrop-blur-lg shadow-sm sticky top-0 z-50 transition-colors duration-300">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center space-x-6">
+            <Logo />
+            <nav className="hidden md:flex items-center space-x-5">
+              <Link to="/" className="text-sm font-medium text-slate-700 hover:text-sky-700 transition-colors py-2 no-underline">Home</Link>
+              <Link to="/profiles" className="text-sm font-medium text-slate-700 hover:text-sky-700 transition-colors py-2 no-underline">Profiles</Link>
+            </nav>
+          </div>
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link to="/" className="text-gray-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 transition-colors">Home</Link>
-          <Link to="/profiles" className="text-gray-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-sky-400 transition-colors">Profiles</Link>
-        </nav>
-
-        {/* Right side: Theme Toggle, Notifications, User Menu/Login */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
-           <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none"
-              aria-label="Toggle theme"
-            >
-              {isDarkMode ? <FaSun className="h-5 w-5" /> : <FaMoon className="h-5 w-5" />}
-            </button>
-
-          {authLoading ? (
-            <div className="w-8 h-8 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse"></div>
-          ) : user ? (
-            <>
-              {/* Notification Icon (Desktop) - Placeholder */}
-              <button className="hidden sm:block p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none">
-                <FaBell className="h-5 w-5" />
-              </button>
-              {/* User Menu (Desktop) */}
-              <div className="hidden md:relative md:block" ref={dropdownRef}>
-                <UserMenuButton />
-                {isDropdownOpen && <DropdownMenu />}
+          <div className="flex items-center space-x-3 sm:space-x-4">
+            {authLoading ? (
+              <div className="w-9 h-9 bg-slate-300/50 rounded-full animate-pulse"></div>
+            ) : user ? (
+              <div className="hidden md:flex items-center space-x-3">
+                <button aria-label="Notifications" className="p-2 rounded-full text-slate-600 hover:bg-sky-100/50 focus:outline-none transition-colors">
+                  <FaBell className="h-5 w-5" />
+                </button>
+                <UserDropdown />
               </div>
-            </>
-          ) : (
-            <div className="hidden md:flex items-center space-x-2">
-              <AuthButtons />
+            ) : (
+              <div className="hidden md:flex">
+                <AuthButtons />
+              </div>
+            )}
+            <div className="md:hidden flex items-center">
+              {user && !authLoading && (
+                <button aria-label="Notifications" className="p-2 rounded-full text-slate-600 hover:bg-sky-100/50 focus:outline-none transition-colors mr-1">
+                  <FaBell className="h-5 w-5" />
+                </button>
+              )}
+              <button
+                onClick={toggleMobileMenu}
+                className="p-2 rounded-md text-slate-600 hover:bg-sky-100/50 focus:outline-none"
+                aria-label="Toggle mobile menu"
+              >
+                {isMobileMenuOpen ? <FaTimes className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
+              </button>
             </div>
-          )}
-          {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <button
-              onClick={toggleMobileMenu}
-              className="p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none"
-              aria-label="Toggle mobile menu"
-            >
-              {isMobileMenuOpen ? <FaTimes className="h-6 w-6" /> : <FaBars className="h-6 w-6" />}
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu Area */}
       {isMobileMenuOpen && (
-        <div ref={mobileMenuRef} className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-slate-800 shadow-lg pb-4 z-40"> {/* Adjusted z-index */}
-          <nav className="flex flex-col space-y-2 px-4 pt-2">
-            <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 block px-3 py-2 rounded-md text-base font-medium">Home</Link>
-            <Link to="/profiles" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 block px-3 py-2 rounded-md text-base font-medium">Profiles</Link>
-            {/* User-specific links for mobile */}
-            {user && (
+        <div ref={mobileMenuRef} className="md:hidden absolute top-full left-0 right-0 bg-sky-50/95 backdrop-blur-md shadow-lg pb-4 z-40 border-t border-sky-200">
+          <nav className="flex flex-col px-3 pt-2 pb-3">
+            {authLoading ? (
+                <div className="px-3 py-2.5 text-center">
+                    <div className="inline-block animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-sky-600"></div>
+                </div>
+            ): user ? (
               <>
-                <hr className="border-slate-200 dark:border-slate-700 my-1"/>
-                <Link
-                    to={`/profiles/${encodeURIComponent(user.username || '')}`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 w-full text-left rounded-md"
-                    >
-                    <FaIdBadge className="mr-3 h-5 w-5 text-slate-500 dark:text-slate-400" />
-                    My Public Profile
-                </Link>
-                <Link
-                    to="/dashboard/edit-profile"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 w-full text-left rounded-md"
-                    >
-                    <FaEdit className="mr-3 h-5 w-5 text-slate-500 dark:text-slate-400" />
-                    Edit Profile
-                </Link>
-                 {user.isAdmin && (
-                    <Link
-                        to="/admin"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-600 w-full text-left rounded-md"
-                        >
-                        <FaUserCircle className="mr-3 h-5 w-5 text-slate-500 dark:text-slate-400" />
-                        Admin Dashboard
-                    </Link>
-                 )}
-                <hr className="border-slate-200 dark:border-slate-700 my-1"/>
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-600 w-full text-left rounded-md"
-                >
-                  <FaSignOutAlt className="mr-3 h-5 w-5" />
-                  Sign out
-                </button>
+                <div className="px-3 py-3 border-b border-slate-200 mb-2">
+                    <div className="flex items-center space-x-3">
+                        <img
+                            className="h-10 w-10 rounded-full object-cover border-2 border-sky-200"
+                            src={user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username || 'U')}&background=0ea5e9&color=fff&size=40&bold=true`}
+                            alt="User avatar"
+                        />
+                        <div>
+                            <p className="text-sm font-semibold text-slate-800 truncate">{user.name || user.username}</p>
+                            <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                        </div>
+                    </div>
+                </div>
+                <Link to={`/profiles/${encodeURIComponent(user.username || '')}`} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center px-3 py-2.5 text-sm text-slate-700 hover:bg-sky-100 rounded-md transition-colors no-underline"> <FaIdBadge className="mr-3 h-5 w-5 text-slate-400" /> My Public Profile </Link>
+                <Link to="/dashboard/edit-profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center px-3 py-2.5 text-sm text-slate-700 hover:bg-sky-100 rounded-md transition-colors no-underline"> <FaEdit className="mr-3 h-5 w-5 text-slate-400" /> Edit Profile </Link>
+                {user.isAdmin && ( <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center px-3 py-2.5 text-sm text-slate-700 hover:bg-sky-100 rounded-md transition-colors no-underline"> <FaUserCircle className="mr-3 h-5 w-5 text-slate-400" /> Admin Dashboard </Link> )}
+                <hr className="border-slate-200 my-2"/>
+                <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-700 hover:bg-sky-100 block px-3 py-2.5 rounded-md text-base font-medium transition-colors no-underline">Home</Link>
+                <Link to="/profiles" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-700 hover:bg-sky-100 block px-3 py-2.5 rounded-md text-base font-medium transition-colors no-underline">Profiles</Link>
+                <hr className="border-slate-200 my-2"/>
+                <button onClick={handleMobileLogout} className="flex items-center mt-1 px-3 py-2.5 text-sm text-red-600 hover:bg-red-100 hover:text-red-700 w-full text-left rounded-md transition-colors no-underline"> <FaSignOutAlt className="mr-3 h-5 w-5" /> Sign out </button>
+              </>
+            ) : (
+              <>
+                <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-700 hover:bg-sky-100 block px-3 py-2.5 rounded-md text-base font-medium transition-colors no-underline">Home</Link>
+                <Link to="/profiles" onClick={() => setIsMobileMenuOpen(false)} className="text-slate-700 hover:bg-sky-100 block px-3 py-2.5 rounded-md text-base font-medium transition-colors no-underline">Profiles</Link>
+                <div className="px-0 pt-3 pb-0 border-t border-slate-200 mt-2">
+                  <AuthButtons isMobile={true} />
+                </div>
               </>
             )}
           </nav>
-          {/* Auth buttons for mobile if not logged in */}
-          {!user && !authLoading && (
-            <div className="px-4 pt-4 flex flex-col space-y-2">
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="outline" className="w-full text-sm">Sign In</Button>
-                </Link>
-                <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="primary" className="w-full text-sm">Sign Up</Button>
-                </Link>
-            </div>
-          )}
         </div>
       )}
     </header>
