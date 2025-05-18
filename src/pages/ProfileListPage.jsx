@@ -201,7 +201,7 @@ const ProfileListPage = () => {
 
     return (
         <>
-            <div className="flex flex-col md:flex-row h-screen overflow-hidden">
+            <div className="flex flex-col md:flex-row h-screen overflow-hidden"> {/* Removed 'scroll' class */}
                 {/* Left Pane: Filters and Profile List */}
                 <div className={`
                     ${mobileView === 'map' && window.innerWidth < 768 ? 'hidden' : 'flex'} 
@@ -211,7 +211,7 @@ const ProfileListPage = () => {
                 `}>
                 {/* Conditional rendering of left pane based on mobileView AND screen size */}
 
-                    <div className="p-4 sticky top-0 bg-gradient-to-br from-sky-50/90 via-teal-50/80 to-cyan-50/90 backdrop-filter backdrop-blur-md z-20 border-b border-slate-200/50">
+                    <div className="p-4 sticky top-0 bg-gradient-to-br from-sky-50/90 via-teal-50/80 to-cyan-50/90 backdrop-filter backdrop-blur-md z-20 border-b border-slate-200/50 ">
                         <Fade direction="down" triggerOnce duration={300}>
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-2xl font-semibold text-slate-700">Explore Profiles</h2>
@@ -273,7 +273,7 @@ const ProfileListPage = () => {
                         </Fade>
                     </div>
 
-                    <div className="p-4 flex-grow overflow-y-auto">
+                    <div className="p-4 flex-grow overflow-y-auto custom-styled-scrollbar"> {/* MODIFIED: Replaced hide-scrollbar */}
                         {filteredAndSortedProfiles.length > 0 ? (
                             <div className="space-y-3">
                                 {filteredAndSortedProfiles.map((profile, index) => (

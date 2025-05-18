@@ -1,5 +1,40 @@
 @import "tailwindcss";
 
+/* Add this to your global CSS file (e.g., src/index.css) */
+
+.custom-styled-scrollbar {
+  /* For Firefox */
+  scrollbar-width: thin; /* 'thin' is the thinnest standard option for Firefox */
+  scrollbar-color: #7dd3fc #e0f2fe; /* Thumb: sky-300, Track: sky-100 */
+}
+
+/* For WebKit-based browsers (Chrome, Safari, Edge, Opera) */
+.custom-styled-scrollbar::-webkit-scrollbar {
+  width: 6px;  /* Overall width of the scrollbar area */
+  height: 6px; /* Overall height for horizontal scrollbar */
+}
+
+.custom-styled-scrollbar::-webkit-scrollbar-track {
+  background: #e0f2fe; /* Light sky blue (Tailwind sky-100) */
+  border-radius: 3px;
+}
+
+.custom-styled-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #7dd3fc; /* Brighter sky blue (Tailwind sky-300) */
+  border-radius: 3px;
+  /* This border makes the thumb appear thinner as it uses the track's color */
+  border: 1px solid #e0f2fe; 
+}
+
+.custom-styled-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #38bdf8; /* A slightly more saturated sky blue on hover (Tailwind sky-400) */
+}
+
+/* Optional: Style for the corner where vertical and horizontal scrollbars meet (if both are present) */
+.custom-styled-scrollbar::-webkit-scrollbar-corner {
+  background: #e0f2fe; /* Match track color */
+}
+
 /* Use standard Tailwind classes instead of custom ones */
 @layer base {
   body {
