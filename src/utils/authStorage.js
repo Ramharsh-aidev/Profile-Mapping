@@ -70,12 +70,10 @@ export const addUser = async (userData) => { // User Signup
 
 export const getUsers = async () => { // For admin views typically (gets all public user data)
     try {
-        // For fetching all users, if this needs admin auth, an auth header would be needed.
         // The current server.js /users GET endpoint is public.
         const adminUserEmail = getLoggedInUser()?.email; // Check if admin is logged in
         const headers = {};
         if (adminUserEmail) { // If you want to send auth header for admin specific fetch all.
-            // headers['x-user-email'] = adminUserEmail; // Example if your /users GET requires it for specific scenarios
         }
         const response = await axios.get(`${API_BASE_URL}/users`, { headers });
         return response.data;
@@ -87,8 +85,7 @@ export const getUsers = async () => { // For admin views typically (gets all pub
 
 export const findUserByEmail = async (email) => { // Used for signup validation
     try {
-        const users = await getUsers(); // This fetches all users, might be inefficient.
-                                        // Backend could have a dedicated GET /users/check-email/:email
+        const users = await getUsers();
         return users.find(user => user.email === email);
     } catch (error) {
         console.error('Error finding user by email via API:', error);

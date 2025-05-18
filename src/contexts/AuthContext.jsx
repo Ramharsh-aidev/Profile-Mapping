@@ -8,8 +8,7 @@ import {
   loginUserApi,
   addUser as apiAddUser,
   findUserByEmail as apiFindUserByEmail,
-} from '../utils/authStorage'; // Ensure this path is correct
-
+} from '../utils/authStorage';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -62,14 +61,12 @@ export const AuthProvider = ({ children }) => {
         setUser(sessionUser);         // Update React context state
     };
 
-    const login = async (email, password) => { /* ... (same as last provided, relies on _updateUserSessionAndContext) ... */
+    const login = async (email, password) => {
         console.log(`AuthContext: Attempting API login for: ${email}`);
         const apiResult = await loginUserApi(email, password); 
 
         if (apiResult && apiResult.user) { 
             // Backend's /auth/login MUST return the merged user object including fields like gender, nationality, etc.
-            // if you want them immediately in the AuthContext user object upon login.
-            // If not, /me/profile-info will fetch them later for UserDashboardPage.
             _updateUserSessionAndContext(apiResult.user);
             console.log("AuthContext: Login successful. User in context:", apiResult.user.username);
             return { success: true, user: apiResult.user };
@@ -108,7 +105,7 @@ export const AuthProvider = ({ children }) => {
         console.log("AuthContext: User logged out.");
     };
 
-    const updateContextUser = (updatedUserDetailsFromApi) => { /* ... (same as before, relies on _updateUserSessionAndContext) ... */
+    const updateContextUser = (updatedUserDetailsFromApi) => {
         if (user && user.email === updatedUserDetailsFromApi.email) { 
              _updateUserSessionAndContext(updatedUserDetailsFromApi);
              console.log("AuthContext: User details updated in context for:", updatedUserDetailsFromApi.email);
@@ -129,7 +126,7 @@ export const AuthProvider = ({ children }) => {
 };
 
 AuthProvider.propTypes = { children: PropTypes.node.isRequired };
-export const useAuth = () => { /* ... (same as before) ... */
+export const useAuth = () => {
     const context = useContext(AuthContext);
     if (context === undefined) {
         throw new Error('useAuth must be used within an AuthProvider');
