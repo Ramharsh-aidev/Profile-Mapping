@@ -1,5 +1,27 @@
 [
   {
+    "username": "anuchaudhary",
+    "email": "anushkachoudhary@gmail.com",
+    "password": "Anushka123@",
+    "isAdmin": false,
+    "location": "Nagpur, Maharashtra",
+    "description": "",
+    "photoURL": "",
+    "name": "Anushka",
+    "dateOfBirth": "2025-10-30"
+  },
+  {
+    "name": "Ramharsh Sanjay Dandekar",
+    "email": "ramharshdandekar@gmail.com",
+    "username": "ramdandekar",
+    "password": "Ramharsh123@",
+    "isAdmin": true,
+    "location": "Nagpur, Maharashtra",
+    "description": "Default Admin User",
+    "photoURL": "",
+    "dateOfBirth": "2005-09-01"
+  },
+  {
     "username": "snehamore",
     "email": "snehamore123@gmail.com",
     "password": "Sneha123@",
