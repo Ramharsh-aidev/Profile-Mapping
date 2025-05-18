@@ -25,6 +25,4 @@ dist-ssr
 *.sw?
 
 # Backend files
-backend/data
 backend/node_modules
-backend1/
