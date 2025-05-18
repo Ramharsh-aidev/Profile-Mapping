@@ -37,7 +37,7 @@ const AppFormSelect = ({ // Renamed component
   </div>
 );
 
-AppFormSelect.propTypes = { /* ... (propTypes remain the same) ... */
+AppFormSelect.propTypes = {
   id: PropTypes.string, name: PropTypes.string.isRequired, label: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]), onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({

@@ -30,7 +30,7 @@ const PersonalDetailsForm = ({ initialData, onSubmit, onCancel, isSubmitting }) 
   }, [initialData]);
 
   const handleChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  const handleFileChange = (e) => { /* ... (same as before) ... */
+  const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -41,7 +41,7 @@ const PersonalDetailsForm = ({ initialData, onSubmit, onCancel, isSubmitting }) 
       toast.success('Photo selected. Click Update to save.', { icon: '📸' });
     }
   };
-  const handleSubmit = (e) => { /* ... (same as before) ... */
+  const handleSubmit = (e) => {
     e.preventDefault();
     const combinedName = `${formData.firstName} ${formData.lastName}`.trim();
     // eslint-disable-next-line no-unused-vars

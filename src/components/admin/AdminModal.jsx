@@ -6,11 +6,9 @@ const AdminModal = ({ isOpen, onClose, title, children, footerActions }) => {
   if (!isOpen) return null;
 
   return (
-    // Modal Overlay: Dims the background
     <div className="fixed inset-0 bg-slate-700 bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-opacity duration-300 ease-in-out"
          onClick={onClose} // Close on overlay click
     >
-      {/* Modal Content: Prevent close on content click */}
       <div
         className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col overflow-hidden animate-fadeInDown" // Simple fade-in animation
         onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside content
@@ -42,9 +40,6 @@ const AdminModal = ({ isOpen, onClose, title, children, footerActions }) => {
     </div>
   );
 };
-// Basic CSS animation (add to your global CSS or Tailwind config)
-// @keyframes fadeInDown { 0% { opacity: 0; transform: translateY(-20px); } 100% { opacity: 1; transform: translateY(0); } }
-// .animate-fadeInDown { animation: fadeInDown 0.3s ease-out forwards; }
 
 
 export default AdminModal;

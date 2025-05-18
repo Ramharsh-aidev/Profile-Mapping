@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const AppFormTextarea = ({ // Renamed component
+const AppFormTextarea = ({
   id, name, label, value, onChange, placeholder, rows = 4, icon, error, required,
   className = "", textareaClassName = "", labelClassName = "", iconClassName = "mr-2 text-slate-400 w-4 h-4"
 }) => (
@@ -25,7 +25,7 @@ const AppFormTextarea = ({ // Renamed component
   </div>
 );
 
-AppFormTextarea.propTypes = { /* ... (propTypes remain the same) ... */
+AppFormTextarea.propTypes = {
   id: PropTypes.string, name: PropTypes.string.isRequired, label: PropTypes.string,
   value: PropTypes.string, onChange: PropTypes.func.isRequired, placeholder: PropTypes.string,
   rows: PropTypes.number, icon: PropTypes.node, error: PropTypes.string, required: PropTypes.bool,
@@ -33,4 +33,4 @@ AppFormTextarea.propTypes = { /* ... (propTypes remain the same) ... */
   iconClassName: PropTypes.string,
 };
 
-export default AppFormTextarea; // Renamed export
+export default AppFormTextarea;
