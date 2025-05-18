@@ -1,0 +1,57 @@
+[
+  {
+    "username": "snehamore",
+    "email": "snehamore123@gmail.com",
+    "password": "Sneha123@",
+    "isAdmin": false,
+    "location": "Pune, Maharashtra",
+    "description": "Aspiring software engineer",
+    "photoURL": "",
+    "name": "Sneha More",
+    "dateOfBirth": "2002-07-15"
+  },
+  {
+    "username": "vikaspatil",
+    "email": "vikaspatil789@gmail.com",
+    "password": "Vikas123@",
+    "isAdmin": false,
+    "location": "Mumbai, Maharashtra",
+    "description": "Tech enthusiast",
+    "photoURL": "",
+    "name": "Vikas Patil",
+    "dateOfBirth": "2001-03-21"
+  },
+  {
+    "username": "kavitasharma",
+    "email": "kavitasharma999@gmail.com",
+    "password": "Kavita123@",
+    "isAdmin": false,
+    "location": "Nagpur, Maharashtra",
+    "description": "Data science learner",
+    "photoURL": "",
+    "name": "Kavita Sharma",
+    "dateOfBirth": "2003-11-05"
+  },
+  {
+    "username": "akashsingh",
+    "email": "akashsingh567@gmail.com",
+    "password": "Akash123@",
+    "isAdmin": false,
+    "location": "Bhopal, Madhya Pradesh",
+    "description": "AI enthusiast",
+    "photoURL": "",
+    "name": "Akash Singh",
+    "dateOfBirth": "2000-05-10"
+  },
+  {
+    "username": "priyankajain",
+    "email": "priyankajain456@gmail.com",
+    "password": "Priyanka123@",
+    "isAdmin": false,
+    "location": "Indore, Madhya Pradesh",
+    "description": "Web developer",
+    "photoURL": "",
+    "name": "Priyanka Jain",
+    "dateOfBirth": "2004-02-18"
+  }
+]

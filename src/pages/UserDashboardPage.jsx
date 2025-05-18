@@ -8,6 +8,8 @@ import PersonalDetailsForm from '../components/dashboard/forms/PersonalDetailsFo
 import ComingSoonSection from '../components/dashboard/ComingSoonSection';
 import { FaUserEdit, FaLock, FaCog, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
 import { toast, Toaster } from 'react-hot-toast';
+import Header from '../components/layouts/Header';
+import Footer from '../components/layouts/Footer';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -77,6 +79,7 @@ const UserDashboardPage = () => {
 
   return (
     <>
+    <Header/>
       <Toaster position="top-center" />
       <div className="min-h-screen bg-sky-50/40 py-10 px-4 sm:px-6 lg:px-8">
         <div className="max-w-screen-xl mx-auto">
@@ -93,6 +96,7 @@ const UserDashboardPage = () => {
           </div>
         </div>
       </div>
+      <Footer/>
     </>
   );
 };

@@ -6,6 +6,7 @@ import UserDetailsSection from '../components/userProfile/UserDetailsSection';
 import UserMapSection from '../components/userProfile/UserMapSection';
 import { getPublicUserProfileByUsername } from '../utils/authStorage';
 import { FaArrowLeft, FaExclamationTriangle, FaSpinner } from 'react-icons/fa'; // Added FaSpinner
+import Header from '../components/layouts/Header';
 
 const ProfileDetailsPage = () => {
     const { username } = useParams();
@@ -103,6 +104,8 @@ const ProfileDetailsPage = () => {
     
     console.log('[ProfileDetailsPage] Rendering profile with data:', JSON.stringify(profileData, null, 2));
     return (
+        <>
+        <Header/>
         <div className="bg-slate-100 min-h-screen py-8 md:py-12">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
                 <div className="mb-6">
@@ -128,6 +131,7 @@ const ProfileDetailsPage = () => {
                 </div>
             </div>
         </div>
+        </>
     );
 };
 
