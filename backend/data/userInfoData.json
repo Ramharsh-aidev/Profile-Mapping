@@ -6,5 +6,45 @@
     "bloodGroup": "O+",
     "category": "developer",
     "tShirtSize": ""
+  },
+  {
+    "email": "snehamore123@gmail.com",
+    "gender": "female",
+    "nationality": "Indian",
+    "bloodGroup": "A+",
+    "category": "designer",
+    "tShirtSize": "M"
+  },
+  {
+    "email": "vikaspatil789@gmail.com",
+    "gender": "male",
+    "nationality": "Indian",
+    "bloodGroup": "B+",
+    "category": "backend developer",
+    "tShirtSize": "L"
+  },
+  {
+    "email": "kavitasharma999@gmail.com",
+    "gender": "female",
+    "nationality": "Indian",
+    "bloodGroup": "AB+",
+    "category": "data scientist",
+    "tShirtSize": "S"
+  },
+  {
+    "email": "akashsingh567@gmail.com",
+    "gender": "male",
+    "nationality": "Indian",
+    "bloodGroup": "O-",
+    "category": "AI researcher",
+    "tShirtSize": "XL"
+  },
+  {
+    "email": "priyankajain456@gmail.com",
+    "gender": "female",
+    "nationality": "Indian",
+    "bloodGroup": "B-",
+    "category": "frontend developer",
+    "tShirtSize": "M"
   }
 ]

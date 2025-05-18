@@ -27,7 +27,7 @@
     "password": "Sneha123@",
     "isAdmin": false,
     "location": "Pune, Maharashtra",
-    "description": "Aspiring software engineer",
+    "description": "Final year Computer Science student passionate about software engineering, cloud computing, and open-source contributions.",
     "photoURL": "",
     "name": "Sneha More",
     "dateOfBirth": "2002-07-15"
@@ -38,7 +38,7 @@
     "password": "Vikas123@",
     "isAdmin": false,
     "location": "Mumbai, Maharashtra",
-    "description": "Tech enthusiast",
+    "description": "Full-stack developer with a love for coding, building scalable web applications, and exploring emerging technologies.",
     "photoURL": "",
     "name": "Vikas Patil",
     "dateOfBirth": "2001-03-21"
@@ -49,7 +49,7 @@
     "password": "Kavita123@",
     "isAdmin": false,
     "location": "Nagpur, Maharashtra",
-    "description": "Data science learner",
+    "description": "Data science enthusiast with a keen interest in machine learning, data analysis, and predictive modeling.",
     "photoURL": "",
     "name": "Kavita Sharma",
     "dateOfBirth": "2003-11-05"
@@ -60,7 +60,7 @@
     "password": "Akash123@",
     "isAdmin": false,
     "location": "Bhopal, Madhya Pradesh",
-    "description": "AI enthusiast",
+    "description": "AI researcher with a passion for deep learning, computer vision, and building intelligent systems.",
     "photoURL": "",
     "name": "Akash Singh",
     "dateOfBirth": "2000-05-10"
@@ -71,7 +71,7 @@
     "password": "Priyanka123@",
     "isAdmin": false,
     "location": "Indore, Madhya Pradesh",
-    "description": "Web developer",
+    "description": "Frontend developer with a focus on UI/UX design, web animations, and responsive web design.",
     "photoURL": "",
     "name": "Priyanka Jain",
     "dateOfBirth": "2004-02-18"
