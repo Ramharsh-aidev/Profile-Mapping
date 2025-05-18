@@ -25,7 +25,7 @@ const MainAppStructure = () => {
 function App() {
   return (
     <AuthProvider>
-      <LoadingProvider delay={50}> {/* delay prop for LoadingProvider */}
+      <LoadingProvider> {/* delay prop for LoadingProvider */}
         <NavigationLoader /> {/* This component will trigger show/hideLoader on route changes */}
         <MainAppStructure /> {/* This component handles conditional rendering */}
       </LoadingProvider>

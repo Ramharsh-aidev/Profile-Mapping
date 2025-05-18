@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLoading } from '../contexts/LoadingContext'; // Adjust path as needed
 
-const NavigationLoader = ({ autoHideDelay = 3000 }) => { // Default auto-hide after 3 seconds
+const NavigationLoader = ({ autoHideDelay = 1000 }) => { // Default auto-hide after 3 seconds
   const { showLoader, hideLoader } = useLoading();
   const location = useLocation();
   const previousPathnameRef = useRef(location.pathname);
