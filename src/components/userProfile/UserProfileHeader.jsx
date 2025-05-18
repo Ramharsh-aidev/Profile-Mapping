@@ -1,10 +1,11 @@
+// src/components/userProfile/UserProfileHeader.jsx
 import React from 'react';
-import { FaEnvelope, FaUserCircle } from 'react-icons/fa';
+import { FaEnvelope } from 'react-icons/fa';
 
-const UserProfileHeader = ({ user }) => {
+const UserProfileHeader = ({ user }) => { // Receives `profileData` as `user` prop
   if (!user) return null;
 
-  const avatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username)}&background=0D8ABC&color=fff&size=128&font-size=0.33&bold=true`;
+  const avatar = user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || user.username || 'U')}&background=0D8ABC&color=fff&size=128&font-size=0.33&bold=true`;
 
   return (
     <div className="bg-gradient-to-br from-sky-500 to-cyan-400 text-white p-6 md:p-8 rounded-t-xl shadow-lg">
@@ -17,17 +18,12 @@ const UserProfileHeader = ({ user }) => {
         <div className="text-center sm:text-left">
           <h1 className="text-2xl md:text-3xl font-bold">{user.name || user.username}</h1>
           {user.username && <p className="text-sky-100 text-md">@{user.username}</p>}
-          {user.email && (
+          {user.email && ( // Assuming email is part of the public profile data from backend
             <a href={`mailto:${user.email}`} className="mt-2 inline-flex items-center text-sm text-sky-50 hover:text-white transition-colors">
               <FaEnvelope className="mr-2" /> {user.email}
             </a>
           )}
-          {/* Placeholder for Edit Button - to be implemented later */}
-          {/* <div className="mt-4">
-            <button className="bg-white text-sky-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-sky-50 transition-colors shadow">
-              Edit Profile (Coming Soon)
-            </button>
-          </div> */}
+          {/* Any other header-specific info from user (profileData) */}
         </div>
       </div>
     </div>

@@ -2,22 +2,25 @@
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:5000'; // Your backend URL
-const LOGGED_IN_USER_KEY = 'profileExplorerLoggedInUser_v2'; // Changed key to avoid old data conflicts
+const LOGGED_IN_USER_KEY = 'profileExplorerLoggedInUser_v2';
 
 // --- Client-Side Session Management (localStorage) ---
-export const setLoggedInUser = (user) => { // User object from API (excluding password)
+export const setLoggedInUser = (user) => {
     if (typeof window !== 'undefined') {
         try {
-            // Ensure we don't store sensitive info like password or tokens if not needed for display
-            const userToStore = {
+            const userToStoreInLocalStorage = {
                 username: user.username,
                 email: user.email,
                 isAdmin: user.isAdmin || false,
                 name: user.name,
                 photoURL: user.photoURL,
-                // Add other details you want to quickly access from the "session"
             };
-            localStorage.setItem(LOGGED_IN_USER_KEY, JSON.stringify(userToStore));
+            Object.keys(userToStoreInLocalStorage).forEach(key => {
+                if (userToStoreInLocalStorage[key] === undefined) {
+                    userToStoreInLocalStorage[key] = (key === 'isAdmin') ? false : '';
+                }
+            });
+            localStorage.setItem(LOGGED_IN_USER_KEY, JSON.stringify(userToStoreInLocalStorage));
         } catch (error) {
             console.error("Error setting loggedInUser in localStorage:", error);
         }
@@ -31,7 +34,7 @@ export const getLoggedInUser = () => {
             return userJson ? JSON.parse(userJson) : null;
         } catch (error) {
             console.error("Error getting loggedInUser from localStorage:", error);
-            localStorage.removeItem(LOGGED_IN_USER_KEY); // Clear potentially corrupted data
+            localStorage.removeItem(LOGGED_IN_USER_KEY);
             return null;
         }
     }
@@ -47,69 +50,116 @@ export const removeLoggedInUser = () => {
 
 // --- API Interaction Functions ---
 
-// LOGIN: Calls the backend /auth/login endpoint
 export const loginUserApi = async (email, password) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
-        return response.data; // Expected: { message: '...', user: {...} /*, token: '...' */ }
+        return response.data; 
     } catch (error) {
         return { success: false, message: error.response?.data?.message || 'Login request failed.' };
     }
 };
 
-// SIGNUP (Add User via API)
-export const addUser = async (userData) => {
+export const addUser = async (userData) => { // User Signup
     try {
         const response = await axios.post(`${API_BASE_URL}/users`, userData);
-        return { success: true, user: response.data.user }; // Backend returns created user
+        return { success: true, user: response.data.user };
     } catch (error) {
         return { success: false, message: error.response?.data?.message || 'Signup failed.' };
     }
 };
 
-// GET ALL USERS (for Admin Dashboard)
-export const getUsers = async () => {
+export const getUsers = async () => { // For admin views typically (gets all public user data)
     try {
-        const response = await axios.get(`${API_BASE_URL}/users`);
-        return response.data; // Backend already strips passwords
+        // For fetching all users, if this needs admin auth, an auth header would be needed.
+        // The current server.js /users GET endpoint is public.
+        const adminUserEmail = getLoggedInUser()?.email; // Check if admin is logged in
+        const headers = {};
+        if (adminUserEmail) { // If you want to send auth header for admin specific fetch all.
+            // headers['x-user-email'] = adminUserEmail; // Example if your /users GET requires it for specific scenarios
+        }
+        const response = await axios.get(`${API_BASE_URL}/users`, { headers });
+        return response.data;
     } catch (error) {
         console.error('Error fetching users from API:', error);
         return [];
     }
 };
 
-// FIND USER BY EMAIL (for Signup validation - might be inefficient, consider dedicated backend check)
-export const findUserByEmail = async (email) => {
+export const findUserByEmail = async (email) => { // Used for signup validation
     try {
-        const users = await getUsers(); // Fetches all public user data
+        const users = await getUsers(); // This fetches all users, might be inefficient.
+                                        // Backend could have a dedicated GET /users/check-email/:email
         return users.find(user => user.email === email);
     } catch (error) {
         console.error('Error finding user by email via API:', error);
-        return undefined; // Or null
+        return undefined;
     }
 };
 
-// UPDATE USER (for Admin Dashboard to update any user via API)
-export const updateUser = async (updatedUserData) => {
+// For logged-in user to update their own profile
+export const updateMyProfileInfo = async (profileData) => {
     try {
-        // Backend /users/:email PUT endpoint handles this for admin
-        // Ensure your backend /users/:email can handle admin updates correctly
-        const response = await axios.put(`${API_BASE_URL}/users/${updatedUserData.email}`, updatedUserData);
-        return { success: true, user: response.data.user }; // Assuming backend returns updated user
+        const currentUserEmail = getLoggedInUser()?.email;
+        if (!currentUserEmail) throw new Error("User not authenticated for profile update.");
+
+        const response = await axios.put(`${API_BASE_URL}/me/profile-info`, profileData, {
+            headers: { 'x-user-email': currentUserEmail } 
+        });
+        return { success: true, user: response.data.user };
     } catch (error) {
-        console.error('Error updating user via API:', error);
-        return { success: false, message: error.response?.data?.message || 'Update failed.' };
+        console.error('Error updating user profile via API:', error);
+        return { success: false, message: error.response?.data?.message || 'Profile update failed.' };
     }
 };
 
-// DELETE USER (for Admin Dashboard via API)
-export const deleteUser = async (email) => {
+
+// ** RENAMED FUNCTION FOR ADMIN **
+// For Admin to update any user. Requires admin authentication.
+export const updateUser = async (userEmailToUpdate, updatedUserData) => {
     try {
-        // Backend /admin/users/:email DELETE endpoint handles this
-        await axios.delete(`${API_BASE_URL}/admin/users/${email}`); // Use admin endpoint
-        return true;
+        const adminUserEmail = getLoggedInUser()?.email; 
+        if (!adminUserEmail) throw new Error("Admin not authenticated for user update.");
+
+        // The backend route for admin updating a specific user is /admin/users/:email
+        const response = await axios.put(`${API_BASE_URL}/admin/users/${userEmailToUpdate}`, updatedUserData, {
+            headers: { 'x-user-email': adminUserEmail }
+        });
+        return { success: true, user: response.data.user };
     } catch (error) {
-        console.error('Error deleting user via API:', error);
-        return false;
+        console.error('Error (admin) updating user via API:', error);
+        return { success: false, message: error.response?.data?.message || 'Admin update failed.' };
+    }
+};
+
+// ** RENAMED FUNCTION FOR ADMIN **
+// For Admin to delete a user. Requires admin authentication.
+export const deleteUser = async (userEmailToDelete) => {
+    try {
+        const adminUserEmail = getLoggedInUser()?.email; 
+        if (!adminUserEmail) throw new Error("Admin not authenticated for user deletion.");
+        
+        // The backend route for admin deleting a user is /admin/users/:email
+        const response = await axios.delete(`${API_BASE_URL}/admin/users/${userEmailToDelete}`, {
+             headers: { 'x-user-email': adminUserEmail }
+        });
+        return { success: true, message: response.data.message };
+    } catch (error) {
+        console.error('Error (admin) deleting user via API:', error);
+        return { success: false, message: error.response?.data?.message || 'Admin deletion failed.' };
+    }
+};
+
+// GET PUBLIC USER PROFILE BY USERNAME
+export const getPublicUserProfileByUsername = async (username) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/users/username/${username}`);
+        return { success: true, profile: response.data }; 
+    } catch (error) {
+        console.error(`Error fetching public profile for ${username}:`, error);
+        return { 
+            success: false, 
+            message: error.response?.data?.message || 'Failed to fetch user profile.',
+            status: error.response?.status 
+        };
     }
 };
