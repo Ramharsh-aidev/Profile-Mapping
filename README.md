@@ -38,7 +38,7 @@ The project demonstrates a modern React+vite frontend with Tailwind CSS for styl
 ## Project Structure
 
 ```
-profile-explorer/
+profile-mapping/
 ├── backend/          # Contains all Node.js/Express backend code
 │   ├── data/
 │   │   ├── userAccounts.json
@@ -79,17 +79,27 @@ profile-explorer/
 
 Follow these steps to set up and run the project locally.
 
+
+## Getting Started
+
 ### Prerequisites
 
 *   Node.js (v16 or higher recommended)
 *   npm or yarn
+*   Git (for cloning the repository)
 
-### 1. Frontend Setup
+### 1. Clone the Repository
 
-First, navigate to the frontend directory and install the necessary dependencies.
+First, clone the project repository to your local machine using Git. Open your terminal or command prompt and run:
 
 ```bash
-cd frontend
+git clone https://github.com/Ramharsh-aidev/Profile-Mapping.git
+cd profile-mapping
+```
+
+### 2. Frontend Setup
+
+```bash
 npm install
 # or
 # yarn install
@@ -105,7 +115,7 @@ npm run dev
 
 The frontend will typically be available at `http://localhost:5173` (or another port specified by Vite).
 
-### 2. Backend Setup
+### 3. Backend Setup
 
 Next, set up the backend server. Open a new terminal window/tab.
 
